@@ -43,6 +43,8 @@ def insert_article(data: dict, db_path: str = DB_PATH) -> str:
             if cursor.fetchone():
                 return 'dup_fp'
 
+        # crawled_at is always set by the crawler at crawl time; fallback is a
+        # safety net in case insert is called with incomplete data.
         crawled_at = data.get('crawled_at') or datetime.now(_VN_TZ).strftime('%Y-%m-%d %H:%M:%S')
 
         cursor.execute('''

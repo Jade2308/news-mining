@@ -15,6 +15,12 @@ logger = logging.getLogger(__name__)
 _VN_TZ = timezone(timedelta(hours=7))
 
 
+_LISTING_BLACKLIST = [
+    '/video', '/podcast', '/infographic', '/multimedia',
+    '/tag/', '/tim-kiem.htm', '/rss.htm',
+]
+
+
 class TuoitreCrawler(BaseCrawler):
     def __init__(self, category='thoi-su'):
         super().__init__('tuoitre', category)
@@ -52,10 +58,7 @@ class TuoitreCrawler(BaseCrawler):
             urls = []
             seen = set()
 
-            blacklist = [
-                '/video', '/podcast', '/infographic', '/multimedia',
-                '/tag/', '/tim-kiem.htm', '/rss.htm',
-            ]
+            blacklist = _LISTING_BLACKLIST
 
             for a in candidate_links:
                 href = a.get('href', '').strip()

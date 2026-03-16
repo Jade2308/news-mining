@@ -107,7 +107,12 @@ def clean_text(text: str, max_len: int = DEFAULT_MAX_LEN) -> str:
     text = text.strip()
 
     if max_len and len(text) > max_len:
-        text = text[:max_len]
+        # Truncate at word boundary to avoid splitting multi-byte chars or words
+        truncated = text[:max_len]
+        last_space = truncated.rfind(' ')
+        if last_space > max_len // 2:
+            truncated = truncated[:last_space]
+        text = truncated
 
     return text
 
