@@ -17,13 +17,23 @@ _VN_TZ = timezone(timedelta(hours=7))
 
 
 class VNExpressCrawler(BaseCrawler):
-    def __init__(self, category='kinh-doanh'):
+    def __init__(self, category='thoi-su'):
         super().__init__('vnexpress', category)
         self.base_url = 'https://vnexpress.net'
 
+        # Mapping category chuẩn hóa -> URL thực tế của VNExpress
+        self.category_urls = {
+            'thoi-su': 'https://vnexpress.net/thoi-su',
+            'kinh-doanh': 'https://vnexpress.net/kinh-doanh',
+            'cong-nghe': 'https://vnexpress.net/khoa-hoc',
+            'giai-tri': 'https://vnexpress.net/giai-tri',
+            'the-thao': 'https://vnexpress.net/the-thao',
+            'suc-khoe': 'https://vnexpress.net/suc-khoe',
+        }
+
     def fetch_listing(self):
         """Lấy danh sách URL từ trang chuyên mục."""
-        url = f'{self.base_url}/{self.category}'
+        url = self.category_urls.get(self.category, f'{self.base_url}/{self.category}')
         logger.info(f"Fetching listing from {url}")
 
         try:
@@ -116,7 +126,7 @@ class VNExpressCrawler(BaseCrawler):
 
 
 if __name__ == '__main__':
-    crawler = VNExpressCrawler(category='kinh-doanh')
+    crawler = VNExpressCrawler(category='thoi-su')
     articles = crawler.run()
     print(f"Crawled {len(articles)} articles")
     if articles:
