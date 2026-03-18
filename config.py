@@ -6,10 +6,12 @@ SOURCES = {
         'base_url': 'https://vnexpress.net',
         'name': 'VNExpress',
         'categories': {
-            'kinh-doanh': 'Kinh tế',
-            'khoa-hoc': 'Công nghệ',
-            'the-thao': 'Thể thao',
+            'thoi-su': 'Thời sự',
+            'kinh-doanh': 'Kinh doanh',
+            'cong-nghe': 'Khoa học công nghệ',
             'giai-tri': 'Giải trí',
+            'the-thao': 'Thể thao',
+            'suc-khoe': 'Sức khỏe',
         }
     },
     'tuoitre': {
@@ -17,9 +19,11 @@ SOURCES = {
         'name': 'Tuổi Trẻ Online',
         'categories': {
             'thoi-su': 'Thời sự',
+            'kinh-doanh': 'Kinh doanh',
             'cong-nghe': 'Công nghệ',
+            'giai-tri': 'Giải trí',
             'the-thao': 'Thể thao',
-            'giao-duc': 'Giáo dục',
+            'suc-khoe': 'Sức khỏe',
         }
     }
 }

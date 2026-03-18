@@ -42,7 +42,7 @@ _CRAWLER_MAP = {
 }
 
 _DEFAULT_CATEGORY = {
-    'vnexpress': 'kinh-doanh',
+    'vnexpress': 'thoi-su',
     'tuoitre': 'thoi-su',
 }
 
@@ -91,7 +91,7 @@ def main():
     parser.add_argument(
         '--category',
         default=None,
-        help='Chuyên mục (mặc định tuỳ nguồn: kinh-doanh / thoi-su)',
+        help='Chuyên mục (mặc định tuỳ nguồn: thoi-su)',
     )
     parser.add_argument(
         '--limit',

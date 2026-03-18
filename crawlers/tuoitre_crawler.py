@@ -26,12 +26,14 @@ class TuoitreCrawler(BaseCrawler):
         super().__init__('tuoitre', category)
         self.base_url = 'https://tuoitre.vn'
 
-        # Mapping category -> URL đúng của Tuổi Trẻ
+        # Mapping category chuẩn hóa -> URL thực tế của Tuổi Trẻ
         self.category_urls = {
             'thoi-su': 'https://tuoitre.vn/thoi-su.htm',
-            'cong-nghe': 'https://tuoitre.vn/nhip-song-so.htm',
+            'kinh-doanh': 'https://tuoitre.vn/kinh-doanh.htm',
+            'cong-nghe': 'https://tuoitre.vn/cong-nghe.htm',
+            'giai-tri': 'https://tuoitre.vn/giai-tri.htm',
             'the-thao': 'https://tuoitre.vn/the-thao.htm',
-            'giao-duc': 'https://tuoitre.vn/giao-duc.htm',
+            'suc-khoe': 'https://tuoitre.vn/suc-khoe.htm',
         }
 
     def fetch_listing(self):
