@@ -20,8 +20,9 @@ _LISTING_BLACKLIST = [
     '/tag/', '/tim-kiem.htm', '/rss.htm',
 ]
 
-# Article URLs on Tuổi Trẻ end with a numeric ID before .htm, e.g. "ten-bai-12345678.htm"
-_ARTICLE_URL_RE = re.compile(r'-\d+\.htm$')
+# Article URLs on Tuổi Trẻ usually end with a long numeric ID before .htm,
+# e.g. "ten-bai-2026031813171468.htm". Avoid section pages like "...-360.htm".
+_ARTICLE_URL_RE = re.compile(r'-\d{7,}\.htm$')
 
 
 class TuoitreCrawler(BaseCrawler):
@@ -143,16 +144,27 @@ class TuoitreCrawler(BaseCrawler):
 
             # --- Published time ---
             published_at = None
-            time_elem = soup.select_one(
-                'div.date-time, span.date-time, span.article__time, time[datetime]'
+
+            meta_time_elem = soup.select_one(
+                'meta[property="article:published_time"], '
+                'meta[name="pubdate"], '
+                'meta[name="publishdate"]'
             )
-            if time_elem:
-                # Prefer machine-readable datetime attribute
-                dt_attr = time_elem.get('datetime')
-                if dt_attr:
-                    published_at = parse_time(dt_attr)
-                else:
-                    published_at = parse_time(normalize_text(time_elem.get_text()))
+            if meta_time_elem and meta_time_elem.get('content'):
+                published_at = parse_time(meta_time_elem.get('content'))
+
+            if not published_at:
+                time_elem = soup.select_one(
+                    'div.date-time, div.detail-time, span.date-time, '
+                    'span.article__time, time[datetime]'
+                )
+                if time_elem:
+                    # Prefer machine-readable datetime attribute
+                    dt_attr = time_elem.get('datetime')
+                    if dt_attr:
+                        published_at = parse_time(dt_attr)
+                    else:
+                        published_at = parse_time(normalize_text(time_elem.get_text()))
 
             # --- Crawled at ---
             crawled_at = datetime.now(_VN_TZ).strftime('%Y-%m-%d %H:%M:%S')

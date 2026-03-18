@@ -80,8 +80,15 @@ def strip_html_noise(html: str) -> BeautifulSoup:
 
     # 2. Remove elements whose class or id looks like an ad / sidebar
     for elem in soup.find_all(True):
-        classes = ' '.join(elem.get('class') or [])
-        elem_id = elem.get('id') or ''
+        attrs = elem.attrs if isinstance(getattr(elem, 'attrs', None), dict) else {}
+
+        classes_raw = attrs.get('class') or []
+        if isinstance(classes_raw, (list, tuple, set)):
+            classes = ' '.join(str(c) for c in classes_raw)
+        else:
+            classes = str(classes_raw)
+
+        elem_id = str(attrs.get('id') or '')
         if _AD_CLASS_PATTERNS.search(classes) or _AD_CLASS_PATTERNS.search(elem_id):
             elem.decompose()
 
