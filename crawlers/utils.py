@@ -27,6 +27,12 @@ _DOW_PREFIX = re.compile(
     re.IGNORECASE | re.UNICODE,
 )
 
+# Timezone suffixes like "(GMT+7)", "GMT+7", "(UTC+7)", "(UTC+07:00)" at end of string
+_TZ_SUFFIX = re.compile(
+    r'\s*\(?\s*(?:GMT|UTC)\s*[+-]\s*\d{1,2}(?::\d{2})?\s*\)?\s*$',
+    re.IGNORECASE,
+)
+
 
 def normalize_text(text: str) -> str:
     """Chuẩn hóa text: bỏ khoảng trắng thừa."""
@@ -46,7 +52,17 @@ def parse_time(time_str: str) -> str | None:
     -----------------
     * Relative: "N giờ trước", "N phút trước", "N ngày trước", "hôm qua"
     * Absolute: dd/mm/yyyy HH:MM[, …], ISO variants, prefixed by day-of-week
+    * Timezone suffixes like "(GMT+7)" are stripped before parsing.
     * Does **not** fall back to ``datetime.now()`` – returns ``None`` instead.
+
+    Examples (format check – dates are fixed, not relative)::
+
+        >>> parse_time("Thứ tư, 18/3/2026, 09:41 (GMT+7)")
+        '2026-03-18 09:41:00'
+        >>> parse_time("Thứ ba, 17/3/2026, 21:18 (GMT+7)")
+        '2026-03-17 21:18:00'
+        >>> parse_time("garbage string xyz")  # cannot parse
+        >>> parse_time("")                     # empty input
     """
     if not time_str:
         return None
@@ -91,6 +107,8 @@ def parse_time(time_str: str) -> str | None:
     # --- 2. Absolute expressions ---
     # Strip Vietnamese day-of-week prefix, e.g. "Thứ Hai, 25/12/2023, 14:30"
     cleaned = _DOW_PREFIX.sub('', raw).strip().lstrip(',').strip()
+    # Strip trailing timezone suffix, e.g. "(GMT+7)", "GMT+7", "(UTC+7)"
+    cleaned = _TZ_SUFFIX.sub('', cleaned).strip().rstrip(',').strip()
 
     for fmt in _ABSOLUTE_FORMATS:
         try:

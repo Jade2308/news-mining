@@ -20,6 +20,9 @@ _LISTING_BLACKLIST = [
     '/tag/', '/tim-kiem.htm', '/rss.htm',
 ]
 
+# Article URLs on Tuổi Trẻ end with a numeric ID before .htm, e.g. "ten-bai-12345678.htm"
+_ARTICLE_URL_RE = re.compile(r'-\d+\.htm$')
+
 
 class TuoitreCrawler(BaseCrawler):
     def __init__(self, category='thoi-su'):
@@ -75,6 +78,9 @@ class TuoitreCrawler(BaseCrawler):
                     continue
                 if any(x in full_url for x in blacklist):
                     continue
+                # Only accept real article URLs (end with -<digits>.htm)
+                if not _ARTICLE_URL_RE.search(full_url):
+                    continue
                 if full_url in seen:
                     continue
 
@@ -88,7 +94,7 @@ class TuoitreCrawler(BaseCrawler):
             return urls
 
         except Exception as e:
-            logger.error(f"Error fetching listing: {e}")
+            logger.error(f"Error fetching listing: {e}", exc_info=True)
             return []
 
     def parse_article(self, url):
@@ -166,7 +172,7 @@ class TuoitreCrawler(BaseCrawler):
             ).to_dict()
 
         except Exception as e:
-            logger.error(f"Error parsing {url}: {e}")
+            logger.error(f"Error parsing {url}: {e}", exc_info=True)
             return None
 
 
