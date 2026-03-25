@@ -1,7 +1,7 @@
 import logging
 from pprint import pprint
 
-from crawlers.tuoitre_crawler import TuoitreCrawler
+from crawlers._tuoitre import TuoitreCrawler
 
 
 def main():

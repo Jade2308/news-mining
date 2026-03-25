@@ -5,7 +5,7 @@ import os
 
 # Use the canonical DB_PATH from config
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from config import DB_PATH
+from core.settings import DB_PATH
 
 
 def init_db(db_path: str = DB_PATH):

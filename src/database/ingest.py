@@ -23,12 +23,12 @@ import sys
 # Ensure project root is on sys.path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from config import DB_PATH
-from config import SOURCES
-from database.schema import init_db
-from database.db import insert_article
-from crawlers.vnexpress_crawler import VNExpressCrawler
-from crawlers.tuoitre_crawler import TuoitreCrawler
+from core.settings import DB_PATH
+from core.settings import SOURCES
+from database.models import init_db
+from database.engine import insert_article
+from crawlers._vnexpress import VNExpressCrawler
+from crawlers._tuoitre import TuoitreCrawler
 
 logging.basicConfig(
     level=logging.INFO,

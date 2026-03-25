@@ -6,10 +6,10 @@ from datetime import datetime, timezone, timedelta
 import requests
 from bs4 import BeautifulSoup
 
-from crawlers.base_crawler import BaseCrawler
-from crawlers.utils import normalize_text, parse_time
-from core.types import Article
-from processing.clean_text import extract_text_from_html, clean_text
+from crawlers.base import BaseCrawler
+from crawlers.helpers import normalize_text, parse_time
+from core.shared_types import Article
+from core.cleaner import extract_text_from_html, clean_text
 
 logger = logging.getLogger(__name__)
 

@@ -57,6 +57,7 @@ Thumbs.db
 *.db
 *.log
 note.txt
-docs/
-!docs/*.md
-!docs/*.py
+
+# Documentation
+!docs/
+!docs/**
