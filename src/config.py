@@ -41,4 +41,4 @@ TOPIC_METHOD = 'lda'  # 'lda' hoặc 'bertopic'
 CLICKBAIT_SAMPLE_SIZE = 300  # Bao nhiêu bài gán nhãn thủ công
 
 # Cơ sở dữ liệu
-DB_PATH = 'news.db'
+DB_PATH = 'data/news.db'
