@@ -58,6 +58,15 @@ Thumbs.db
 *.log
 note.txt
 
+# ML Artifacts (large files)
+*.safetensors
+*.ckpt
+*.pt
+*.pth
+*.bin
+models/**/checkpoint*/
+models/**/runs/
+
 # Documentation
 !docs/
 !docs/**
