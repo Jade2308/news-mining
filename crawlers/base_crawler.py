@@ -33,16 +33,39 @@ class BaseCrawler(ABC):
         """Parse 1 bài - cần override"""
         raise NotImplementedError
     
-    def run(self):
+    def is_url_crawled(self, url):
+        """Kiểm tra xem URL đã có trong database chưa để skip sớm"""
+        try:
+            conn = sqlite3.connect(self.db_path)
+            cursor = conn.cursor()
+            cursor.execute("SELECT 1 FROM articles WHERE url = ?", (url,))
+            exists = cursor.fetchone() is not None
+            conn.close()
+            return exists
+        except Exception as e:
+            logger.error(f"DB Error checking URL {url}: {e}")
+            return False
+
+    def run(self, max_articles=None, stop_on_duplicate=False):
         """Orchestrate: fetch listing → parse từng bài"""
         logger.info(f"Starting crawl for {self.source} - {self.category}")
         
         try:
             listing = self.fetch_listing()
+            if max_articles and max_articles > 0:
+                listing = listing[:max_articles]
             logger.info(f"Found {len(listing)} articles in listing")
             
             articles = []
             for i, url in enumerate(listing, 1):
+                # TRÁNH CRAWL LẠI BÀI CŨ ĐỂ TIẾT KIỆM THỜI GIAN
+                if self.is_url_crawled(url):
+                    logger.info(f"⏭️ Skipped {i}/{len(listing)}: Đã có trong DB {url}")
+                    if stop_on_duplicate:
+                        logger.info("Dừng category này do gặp bài báo đã cũ.")
+                        break
+                    continue
+                
                 try:
                     article = self.parse_article(url)
                     if article:

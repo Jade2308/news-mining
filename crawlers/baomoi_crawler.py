@@ -13,6 +13,7 @@ from processing.clean_text import extract_text_from_html, clean_text
 logger = logging.getLogger(__name__)
 
 _VN_TZ = timezone(timedelta(hours=7))
+_ARTICLE_URL_RE = re.compile(r'-c\d+\.epi$')
 
 
 class BaomoiCrawler(BaseCrawler):
@@ -24,6 +25,7 @@ class BaomoiCrawler(BaseCrawler):
         
         # Mapping category -> URL
         self.category_urls = {
+            'trang-chu': 'https://www.baomoi.com',
             'bong-đa': 'https://www.baomoi.com/bong-da.epi',
             'the-gioi': 'https://www.baomoi.com/the-gioi.epi',
             'xa-hoi': 'https://www.baomoi.com/xa-hoi.epi',
@@ -41,7 +43,7 @@ class BaomoiCrawler(BaseCrawler):
         }
     def fetch_listing(self):
         """Lấy danh sách URL bài từ baomoi.com"""
-        url = self.category_urls.get(self.category, self.category_urls['trang-chu'])
+        url = self.category_urls.get(self.category) or self.category_urls.get('trang-chu') or self.base_url
         logger.info(f"Fetching listing from {url}")
         
         try:
@@ -51,19 +53,16 @@ class BaomoiCrawler(BaseCrawler):
             
             urls = []
             seen = set()
-            
-            # Tìm các link bài viết - baomoi.com thường dùng các class như 'item-news', 'story-item', v.v.
-            article_links = soup.select(
-                'a[href*="/chi-tiet/"],'
-                'a[href*="/tin/"],'
-                'a.item-news[href],'
-                'a.story-item[href],'
-                '.article-item a[href],'
-                '.news-item a[href]'
-            )
-            
-            blacklist_patterns = ['/tag/', '/tim-kiem', '/video', '/photo', '/comment']
-            
+
+            # Baomoi hiện dùng slug bài viết dạng: ...-c54849004.epi
+            # Duyệt tất cả anchor rồi lọc theo pattern bài viết thực
+            article_links = soup.select('a[href]')
+
+            blacklist_patterns = [
+                '/tag/', '/tim-kiem', '/video', '/photo', '/comment',
+                '/tin-video', '/tin-anh', '/chu-de', '/livescore', '/top'
+            ]
+
             for a in article_links:
                 href = a.get('href', '').strip()
                 if not href:
@@ -78,6 +77,10 @@ class BaomoiCrawler(BaseCrawler):
                 
                 # Loại bỏ các URL không phải bài viết
                 if any(pattern in full_url for pattern in blacklist_patterns):
+                    continue
+
+                # Chỉ nhận bài viết thật sự
+                if not _ARTICLE_URL_RE.search(full_url):
                     continue
                 
                 # Loại bỏ URL trùng lặp

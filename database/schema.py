@@ -33,6 +33,19 @@ def init_db(db_path: str = DB_PATH):
     )
     ''')
 
+    cursor.execute("PRAGMA table_info(articles)")
+    existing_columns = {row[1] for row in cursor.fetchall()}
+    prediction_columns = {
+        'predicted_label': 'TEXT',
+        'prediction_score': 'REAL',
+        'model_version': 'TEXT',
+        'labeled_at': 'TEXT',
+    }
+
+    for column_name, column_type in prediction_columns.items():
+        if column_name not in existing_columns:
+            cursor.execute(f'ALTER TABLE articles ADD COLUMN {column_name} {column_type}')
+
     # Index to speed up fingerprint-based dedup lookups
     cursor.execute(
         'CREATE INDEX IF NOT EXISTS idx_fingerprint ON articles(fingerprint)'
@@ -43,6 +56,13 @@ def init_db(db_path: str = DB_PATH):
     )
     cursor.execute(
         'CREATE INDEX IF NOT EXISTS idx_published_at ON articles(published_at)'
+    )
+    # Index để query dự đoán nhanh
+    cursor.execute(
+        'CREATE INDEX IF NOT EXISTS idx_predicted_label ON articles(predicted_label)'
+    )
+    cursor.execute(
+        'CREATE INDEX IF NOT EXISTS idx_labeled_at ON articles(labeled_at)'
     )
 
     conn.commit()
