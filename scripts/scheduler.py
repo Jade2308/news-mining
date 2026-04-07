@@ -2,8 +2,12 @@ import time
 
 # Fix imports for the new project structure
 import sys
+import os
 from pathlib import Path
 project_root = Path(__file__).resolve().parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
 src_path = project_root / 'src'
 if str(src_path) not in sys.path:
     sys.path.insert(0, str(src_path))
@@ -24,10 +28,10 @@ logging.basicConfig(
 )
 
 def run_job():
-    logging.info("ĐANG KÍCH HOẠT SCRIPT `crawl_hourly.py`...")
+    logging.info("ĐANG KÍCH HOẠT SCRIPT `crawl.py --hourly`...")
     try:
         # sys.executable đảm bảo dùng đúng file python trong môi trường ảo (.venv) hiện tại
-        subprocess.run([sys.executable, "scripts/crawl_hourly.py"])
+        subprocess.run([sys.executable, "scripts/crawl.py", "--hourly"])
         logging.info("✅ HOÀN TẤT PHIÊN LÀM VIỆC!")
     except Exception as e:
         logging.error(f"❌ Lỗi khi chạy: {e}")

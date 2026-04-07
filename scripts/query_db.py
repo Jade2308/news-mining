@@ -1,6 +1,5 @@
-#!/usr/bin/env python3
 """
-scripts/query_articles.py
+scripts/query_db.py
 Query dữ liệu từ database
 """
 

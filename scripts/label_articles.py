@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-scripts/label_articles_with_predictions.py
+scripts/label_articles.py
 Dự đoán nhãn cho tất cả articles chưa predict và lưu vào database
 """
 
@@ -85,7 +85,7 @@ def run_labeling(
 
         if total_articles == 0:
             logger.warning("⚠️ Database is empty: chưa có bài viết nào được crawl vào bảng articles.")
-            logger.warning("   Hãy chạy: python scripts/crawl_all.py")
+            logger.warning("   Hãy chạy: python scripts/crawl.py --full")
         else:
             logger.info("✅ All articles already predicted!")
             logger.info(f"   Total articles: {total_articles}")

@@ -5,8 +5,8 @@ from datetime import datetime, timezone, timedelta
 from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
-from ai_news.crawlers._crawler import BaseCrawler
-from ai_news.crawlers. import normalize_text, parse_time
+from ai_news.crawlers.base_crawler import BaseCrawler
+from ai_news.crawlers.utils import normalize_text, parse_time
 from ai_news.core.types import Article
 from ai_news.processing.clean_text import extract_text_from_html, clean_text
 
