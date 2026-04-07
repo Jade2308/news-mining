@@ -19,6 +19,8 @@ from tqdm import tqdm
 from pathlib import Path
 import json
 
+from ai_news.config import MODEL_DIR, DATASET_CSV
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -58,8 +60,8 @@ class ClickbaitDataset(Dataset):
 
 
 def train_phobert(
-    csv_path: str,
-    output_dir: str = 'models/phobert_clickbait',
+    csv_path: str = DATASET_CSV,
+    output_dir: str = str(MODEL_DIR),
     epochs: int = 3,
     batch_size: int = 16,
     learning_rate: float = 2e-5,
@@ -269,13 +271,13 @@ if __name__ == '__main__':
     parser.add_argument(
         '--csv-path',
         type=str,
-        default='clickbait_dataset_vietnamese.csv',
+        default=DATASET_CSV,
         help='Path to dataset CSV file'
     )
     parser.add_argument(
         '--output-dir',
         type=str,
-        default='models/phobert_clickbait',
+        default=str(MODEL_DIR),
         help='Directory to save trained model'
     )
     parser.add_argument(

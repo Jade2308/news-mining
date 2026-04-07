@@ -8,7 +8,8 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.models.phobert_classifier import PhoBERTClickbaitClassifier
+from ai_news.config import MODEL_DIR
+from ai_news.models.phobert_classifier import PhoBERTClickbaitClassifier
 
 logging.basicConfig(
     level=logging.INFO,
@@ -20,13 +21,13 @@ logger = logging.getLogger(__name__)
 def main():
     """Test PhoBERT model on sample Vietnamese titles."""
     
-    model_path = 'models/phobert_clickbait'
+    model_path = str(MODEL_DIR)
     
     # Check if model exists
     if not Path(model_path).exists():
         logger.error(f"❌ Model not found at {model_path}")
         logger.info("Please train the model first:")
-        logger.info("  python src/models/train_clickbait.py")
+        logger.info("  python -m ai_news.models.train_clickbait")
         return
     
     # Load model

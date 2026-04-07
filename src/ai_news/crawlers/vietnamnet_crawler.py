@@ -1,4 +1,3 @@
-# crawlers/vnexpress_crawler.py
 import time
 import logging
 from datetime import datetime, timezone, timedelta
@@ -6,44 +5,39 @@ from datetime import datetime, timezone, timedelta
 import requests
 from bs4 import BeautifulSoup
 
-from crawlers.base_crawler import BaseCrawler
-from crawlers.utils import normalize_text, parse_time
-from core.types import Article
-from processing.clean_text import extract_text_from_html, clean_text
+from ai_news.crawlers._crawler import BaseCrawler
+from ai_news.crawlers. import normalize_text, parse_time
+from ai_news.core.types import Article
+from ai_news.processing.clean_text import extract_text_from_html, clean_text
 
 logger = logging.getLogger(__name__)
 
 _VN_TZ = timezone(timedelta(hours=7))
 
-
-class VNExpressCrawler(BaseCrawler):
+class VietnamNetCrawler(BaseCrawler):
     def __init__(self, category='thoi-su'):
-        super().__init__('vnexpress', category)
-        self.base_url = 'https://vnexpress.net'
+        super().__init__('vietnamnet', category)
+        self.base_url = 'https://vietnamnet.vn'
 
-        # Mapping category chuẩn hóa -> URL thực tế của VNExpress
         self.category_urls = {
-            'vne-go': 'https://vnexpress.net/vne-go',
-            'thoi-su': 'https://vnexpress.net/thoi-su',
-            'the-gioi': 'https://vnexpress.net/the-gioi',
-            'khoa-hoc-cong-nghe': 'https://vnexpress.net/khoa-hoc-cong-nghe',
-            'goc-nhin': 'https://vnexpress.net/goc-nhin',
-            'bat-đong-san': 'https://vnexpress.net/bat-dong-san',
-            'suc-khoe': 'https://vnexpress.net/suc-khoe',
-            'the-thao': 'https://vnexpress.net/the-thao',
-            'giai-tri': 'https://vnexpress.net/giai-tri',
-            'phap-luat': 'https://vnexpress.net/phap-luat',
-            'giao-duc': 'https://vnexpress.net/giao-duc',
-            'đoi-song': 'https://vnexpress.net/doi-song',
-            'xe': 'https://vnexpress.net/oto-xe-may',
-            'du-lich': 'https://vnexpress.net/du-lich',
-            'y-kien': 'https://vnexpress.net/y-kien',
-            'tam-su': 'https://vnexpress.net/tam-su',
-            'thu-gian': 'https://vnexpress.net/thu-gian',
+            'chinh-tri': 'https://vietnamnet.vn/chinh-tri',
+            'thoi-su': 'https://vietnamnet.vn/thoi-su',
+            'net-zero': 'https://vietnamnet.vn/net-zero',
+            'giao-duc': 'https://vietnamnet.vn/giao-duc',
+            'the-gioi': 'https://vietnamnet.vn/the-gioi',
+            'the-thao': 'https://vietnamnet.vn/the-thao',
+            'đoi-song': 'https://vietnamnet.vn/doi-song',
+            'tuan-viet-nam': 'https://vietnamnet.vn/tuan-viet-nam',
+            'suc-khoe': 'https://vietnamnet.vn/suc-khoe',
+            'cong-nghe': 'https://vietnamnet.vn/cong-nghe',
+            'phap-luat': 'https://vietnamnet.vn/phap-luat',
+            'xe': 'https://vietnamnet.vn/oto-xe-may',
+            'bat-đong-san': 'https://vietnamnet.vn/bat-dong-san',
+            'du-lich': 'https://vietnamnet.vn/du-lich',
+            'ban-đoc': 'https://vietnamnet.vn/ban-doc',
         }
 
     def fetch_listing(self):
-        """Lấy danh sách URL từ trang chuyên mục."""
         url = self.category_urls.get(self.category, f'{self.base_url}/{self.category}')
         logger.info(f"Fetching listing from {url}")
 
@@ -52,18 +46,18 @@ class VNExpressCrawler(BaseCrawler):
             r.raise_for_status()
             soup = BeautifulSoup(r.content, 'html.parser')
 
-            articles = soup.select('article.item-news')
-            logger.info(f"Found {len(articles)} article items")
-
+            # Vietnamnet articles are often split into different wrapper divs like vnn-title, feature-box
             urls = []
-            for article in articles:
-                link = article.select_one('a.title-news, h3 a, h2 a')
+            # Try to grab anchors with href inside heading tags
+            for link in soup.select('h3 a, h2 a, h4 a, .vnn-title a'):
                 if link and link.get('href'):
                     href = link['href']
                     if not href.startswith('http'):
                         href = self.base_url + href
-                    urls.append(href)
+                    if href not in urls:
+                        urls.append(href)
 
+            logger.info(f"Found {len(urls)} article items")
             return urls
 
         except Exception as e:
@@ -71,8 +65,7 @@ class VNExpressCrawler(BaseCrawler):
             return []
 
     def parse_article(self, url):
-        """Parse 1 bài VNExpress và trả về Article theo schema chuẩn."""
-        time.sleep(1)  # rate-limit
+        time.sleep(1)
 
         try:
             r = self.session.get(url, timeout=15)
@@ -80,46 +73,48 @@ class VNExpressCrawler(BaseCrawler):
             html = r.text
             soup = BeautifulSoup(r.content, 'html.parser')
 
-            # --- Title (required) ---
-            title_elem = soup.select_one('h1.title-detail')
+            # --- Title ---
+            # VietnamNet uses <h1 class="content-detail-title">
+            title_elem = soup.select_one('h1.content-detail-title, h1.title')
             title = normalize_text(title_elem.get_text()) if title_elem else ''
             if not title:
                 logger.warning(f"No title found for {url}, skipping")
                 return None
 
             # --- Summary ---
-            summary_elem = soup.select_one('p.description')
+            summary_elem = soup.select_one('h2.content-detail-sapo, div.content-detail-sapo')
             summary = normalize_text(summary_elem.get_text()) if summary_elem else ''
 
             # --- Author ---
-            author_elem = soup.select_one('p.author_mail strong, p.author strong, span.author')
+            # VietnamNet doesn't reliably have an author or uses something like <span class="author-name">
+            author_elem = soup.select_one('p.author-name, span.author, .author-info a')
             author = normalize_text(author_elem.get_text()) if author_elem else None
 
             # --- Tags ---
-            tag_elems = soup.select('ul.list-tag a, div.tags a')
+            tag_elems = soup.select('div.tags-box a.tag, div.tags a')
             tags = [normalize_text(t.get_text()) for t in tag_elems if t.get_text(strip=True)]
 
             # --- Content ---
-            content_elem = soup.select_one('article.fck_detail, article')
+            content_elem = soup.select_one('div.maincontent, div.content-detail')
             content_html_raw = str(content_elem) if content_elem else ''
             content_text = extract_text_from_html(
                 content_html_raw or html,
-                content_selector='article.fck_detail',
+                content_selector='div.maincontent, div.content-detail',
             )
             content_text = clean_text(content_text)
 
             # --- Published time ---
-            time_elem = soup.select_one('span.date')
+            # Typically <div class="bread-crumb-detail__time">
+            time_elem = soup.select_one('.bread-crumb-detail__time, .publish-time')
             published_at = None
             if time_elem:
                 published_at = parse_time(normalize_text(time_elem.get_text()))
 
-            # --- Crawled at ---
             crawled_at = datetime.now(_VN_TZ).strftime('%Y-%m-%d %H:%M:%S')
 
             return Article(
                 url=url,
-                source='vnexpress',
+                source='vietnamnet',
                 category=self.category,
                 title=title,
                 summary=summary or None,
@@ -135,9 +130,8 @@ class VNExpressCrawler(BaseCrawler):
             logger.error(f"Error parsing {url}: {e}")
             return None
 
-
 if __name__ == '__main__':
-    crawler_instance = VNExpressCrawler()
+    crawler_instance = VietnamNetCrawler()
     
     total_articles = []
     for category_slug in crawler_instance.category_urls.keys():

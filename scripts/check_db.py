@@ -5,12 +5,21 @@ Kiểm tra trạng thái database
 """
 
 import sys
+
+# Fix imports for the new project structure
+import sys
+from pathlib import Path
+project_root = Path(__file__).resolve().parent.parent
+src_path = project_root / 'src'
+if str(src_path) not in sys.path:
+    sys.path.insert(0, str(src_path))
+
 import os
 import sqlite3
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from config import DB_PATH
+from ai_news.config import DB_PATH
 
 
 def check_database():

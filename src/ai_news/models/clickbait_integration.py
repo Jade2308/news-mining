@@ -4,16 +4,15 @@ import sys
 from typing import Tuple, Optional
 from pathlib import Path
 
-# Ensure project root is in Python path when running as script
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT))
+# Fix imports to use the new package structure
+from ai_news.config import MODEL_DIR
+from ai_news.models.phobert_classifier import PhoBERTClickbaitClassifier
 
 logger = logging.getLogger(__name__)
 
 # Cache the model to avoid reloading
 _CLICKBAIT_MODEL = None
-_MODEL_PATH = 'models/phobert_clickbait'
+_MODEL_PATH = str(MODEL_DIR)
 
 
 def get_clickbait_model():
@@ -33,10 +32,9 @@ def get_clickbait_model():
         if not Path(_MODEL_PATH).exists():
             logger.warning(f"❌ Model not found at {_MODEL_PATH}")
             logger.info("   Please train the model first using:")
-            logger.info("   python src/models/train_clickbait.py")
+            logger.info("   python -m ai_news.models.train_clickbait")
             return None
         
-        from src.models.phobert_classifier import PhoBERTClickbaitClassifier
         logger.info(f"🤖 Loading PhoBERT model from {_MODEL_PATH}")
         _CLICKBAIT_MODEL = PhoBERTClickbaitClassifier(model_name=_MODEL_PATH)
         logger.info("✅ PhoBERT model loaded successfully")
@@ -198,7 +196,7 @@ def insert_article_with_clickbait_detection(
         - insert_status: 'inserted', 'dup_url', 'dup_fp'
         - clickbait_result: Dict with detection results or None
     """
-    from database.db import insert_article
+    from ai_news.database.db import insert_article
     
     clickbait_result = None
     

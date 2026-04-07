@@ -101,27 +101,22 @@ python scripts/seed_db.py --source all --limit 50
 
 ---
 
-## Cấu trúc dự án
+## Cấu trúc dự án (Đã Refactor)
 
 ```
-news-mining/
-├── config.py                  # DB_PATH và cấu hình chung
-├── requirements.txt
-├── scripts/
-│   ├── init_db.py             # Tạo DB & schema
-│   └── seed_db.py             # Crawl → clean → insert
-├── crawlers/
-│   ├── base_crawler.py        # Abstract base
-│   ├── vnexpress_crawler.py   # Crawler VNExpress
-│   ├── tuoitre_crawler.py     # Crawler Tuổi Trẻ
-│   └── utils.py               # normalize_text, parse_time
-├── core/
-│   └── types.py               # Article dataclass (unified schema)
-├── processing/
-│   └── clean_text.py          # Làm sạch nội dung HTML/text
-└── database/
-    ├── schema.py              # init_db() – CREATE TABLE
-    └── db.py                  # insert_article, get_all_articles, …
+ai-news-content-analysis/
+├── data/                      # Dữ liệu thực thi (news.db, dataset)
+├── artifacts/                 # Kết quả (models/, evaluation/)
+├── src/
+│   └── ai_news/               # Source code chính
+│       ├── config.py          # Cấu hình trung tâm (pathlib)
+│       ├── core/              # Types & Models chung
+│       ├── crawlers/          # Các module thu thập tin tức
+│       ├── database/          # Thao tác SQLite
+│       ├── models/            # ML models (Training, Inference)
+│       └── processing/        # Tiền xử lý văn bản
+├── scripts/                   # Các điểm chạy (Entry points)
+└── requirements.txt
 ```
 
 ---

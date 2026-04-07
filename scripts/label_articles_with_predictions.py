@@ -5,6 +5,15 @@ Dự đoán nhãn cho tất cả articles chưa predict và lưu vào database
 """
 
 import sys
+
+# Fix imports for the new project structure
+import sys
+from pathlib import Path
+project_root = Path(__file__).resolve().parent.parent
+src_path = project_root / 'src'
+if str(src_path) not in sys.path:
+    sys.path.insert(0, str(src_path))
+
 import os
 import logging
 import argparse
@@ -12,14 +21,14 @@ import sqlite3
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from database.predictions import (
+from ai_news.database.predictions import (
     add_batch_predictions,
     get_unpredicted_articles,
     get_prediction_stats,
     get_sample_predictions
 )
-from database.schema import init_db
-from config import DB_PATH
+from ai_news.database.schema import init_db
+from ai_news.config import DB_PATH, MODEL_DIR
 
 logging.basicConfig(
     level=logging.INFO,
@@ -61,7 +70,7 @@ def run_labeling(
     # Load model
     logger.info(f"Loading model from {model_path}...")
     try:
-        from src.models.phobert_classifier import PhoBERTClickbaitClassifier
+        from ai_news.models.phobert_classifier import PhoBERTClickbaitClassifier
         classifier = PhoBERTClickbaitClassifier(model_name=model_path)
     except Exception as e:
         logger.error(f"Cannot load model: {e}")

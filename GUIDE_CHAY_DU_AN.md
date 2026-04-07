@@ -51,9 +51,9 @@ Cách để khôi phục và làm sống lại hệ thống AI tại máy tính 
 **Bước 1: Tái tạo lại Trí thông minh gốc**
 Tại khu vực gốc dự án, hãy mở Terminal lên và chạy file huấn luyện (Train) lại model:
 ```bash
-python src/models/train_clickbait.py
+python -m ai_news.models.train_clickbait
 ```
-*(Quá trình này sẽ tốn một khoảng thời gian chờ đợi tiến trình tùy thuộc vào năng lực máy tính. Hệ thống sẽ tự động học hỏi từ kho dữ liệu CSV có sẵn cấu trúc `clickbait_dataset_vietnamese.csv` của dự án để tái sinh lại nguyên bản thư mục `models/phobert_clickbait/` cho bạn rập khuôn y như cũ).*
+*(Quá trình này sẽ tốn một khoảng thời gian chờ đợi tiến trình tùy thuộc vào năng lực máy tính. Hệ thống sẽ tự động học hỏi từ kho dữ liệu CSV có sẵn tại `data/clickbait_dataset_vietnamese.csv` để tái sinh lại thư mục `artifacts/models/` cho bạn).*
 
 **Bước 2: Gắn nhãn bù luồng dữ liệu bị tồn đọng**
 Thông thường ở máy tính mới, CSDL của bạn có thể xuất hiện một đống bài được Crawl về mà chưa có nhãn. Hãy khởi động Model vừa mới rèn xong để nó vớt vát quét lại một lượt dự đoán bổ sung:

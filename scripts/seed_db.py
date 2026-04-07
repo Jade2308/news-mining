@@ -16,6 +16,15 @@ Vui lòng tôn trọng ToS và không crawl quá nhanh.
 from __future__ import annotations
 
 import argparse
+
+# Fix imports for the new project structure
+import sys
+from pathlib import Path
+project_root = Path(__file__).resolve().parent.parent
+src_path = project_root / 'src'
+if str(src_path) not in sys.path:
+    sys.path.insert(0, str(src_path))
+
 import logging
 import os
 import sys
@@ -23,12 +32,12 @@ import sys
 # Ensure project root is on sys.path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from config import DB_PATH
-from config import SOURCES
-from database.schema import init_db
-from database.db import insert_article
-from crawlers.vnexpress_crawler import VNExpressCrawler
-from crawlers.tuoitre_crawler import TuoitreCrawler
+from ai_news.config import DB_PATH
+from ai_news.config import SOURCES
+from ai_news.database.schema import init_db
+from ai_news.database.db import insert_article
+from ai_news.crawlers.vnexpress_crawler import VNExpressCrawler
+from ai_news.crawlers.tuoitre_crawler import TuoitreCrawler
 
 logging.basicConfig(
     level=logging.INFO,

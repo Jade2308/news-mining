@@ -21,7 +21,8 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.models.phobert_classifier import PhoBERTClickbaitClassifier
+from ai_news.config import MODEL_DIR, DATASET_CSV, EVALUATION_DIR
+from ai_news.models.phobert_classifier import PhoBERTClickbaitClassifier
 from sklearn.model_selection import train_test_split
 
 logging.basicConfig(
@@ -32,9 +33,9 @@ logger = logging.getLogger(__name__)
 
 
 def evaluate_model(
-    model_path: str,
-    csv_path: str,
-    output_dir: str = 'evaluation_results',
+    model_path: str = str(MODEL_DIR),
+    csv_path: str = DATASET_CSV,
+    output_dir: str = str(EVALUATION_DIR),
     test_size: float = 0.2,
     seed: int = 42
 ):
@@ -271,19 +272,19 @@ if __name__ == '__main__':
     parser.add_argument(
         '--model-path',
         type=str,
-        default='models/phobert_clickbait',
+        default=str(MODEL_DIR),
         help='Path to fine-tuned model'
     )
     parser.add_argument(
         '--csv-path',
         type=str,
-        default='clickbait_dataset_vietnamese.csv',
+        default=DATASET_CSV,
         help='Path to dataset CSV file'
     )
     parser.add_argument(
         '--output-dir',
         type=str,
-        default='evaluation_results',
+        default=str(EVALUATION_DIR),
         help='Directory to save evaluation results'
     )
     

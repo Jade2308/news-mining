@@ -5,6 +5,15 @@ Crawl chế độ siêu tốc định kỳ mỗi giờ: chỉ lấy vài bài m�
 """
 
 import sys
+
+# Fix imports for the new project structure
+import sys
+from pathlib import Path
+project_root = Path(__file__).resolve().parent.parent
+src_path = project_root / 'src'
+if str(src_path) not in sys.path:
+    sys.path.insert(0, str(src_path))
+
 import os
 import logging
 import time
@@ -12,11 +21,11 @@ import time
 # Add parent directory to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from crawlers.baomoi_crawler import BaomoiCrawler
-from crawlers.tuoitre_crawler import TuoitreCrawler
-from crawlers.vnexpress_crawler import VNExpressCrawler
-from crawlers.vietnamnet_crawler import VietnamNetCrawler
-from database.schema import init_db
+from ai_news.crawlers.baomoi_crawler import BaomoiCrawler
+from ai_news.crawlers.tuoitre_crawler import TuoitreCrawler
+from ai_news.crawlers.vnexpress_crawler import VNExpressCrawler
+from ai_news.crawlers.vietnamnet_crawler import VietnamNetCrawler
+from ai_news.database.schema import init_db
 from scripts.label_articles_with_predictions import run_labeling
 
 logging.basicConfig(

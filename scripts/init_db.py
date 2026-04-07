@@ -7,14 +7,23 @@ Cách dùng:
     python scripts/init_db.py --db-path /path/to/custom.db
 """
 import argparse
+
+# Fix imports for the new project structure
+import sys
+from pathlib import Path
+project_root = Path(__file__).resolve().parent.parent
+src_path = project_root / 'src'
+if str(src_path) not in sys.path:
+    sys.path.insert(0, str(src_path))
+
 import os
 import sys
 
 # Ensure project root is on sys.path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from config import DB_PATH
-from database.schema import init_db
+from ai_news.config import DB_PATH
+from ai_news.database.schema import init_db
 
 
 def main():
