@@ -159,7 +159,7 @@ def get_all_articles(limit: int = 1000, db_path: str = DB_PATH) -> list:
     return articles
 
 
-def get_articles_by_timerange(hours: int = 24, limit: int = 1000, db_path: str = DB_PATH) -> list:
+def get_articles_by_timerange(hours: int = 24, db_path: str = DB_PATH) -> list:
     """Return articles crawled within the last *hours* hours."""
     conn = get_connection(db_path)
     cursor = conn.cursor()
@@ -167,8 +167,7 @@ def get_articles_by_timerange(hours: int = 24, limit: int = 1000, db_path: str =
     SELECT * FROM articles
     WHERE crawled_at > datetime('now', '-' || ? || ' hours')
     ORDER BY crawled_at DESC
-    LIMIT ?
-    ''', [hours, limit])
+    ''', [hours])
     columns = [d[0] for d in cursor.description]
     articles = [dict(zip(columns, row)) for row in cursor.fetchall()]
     conn.close()
@@ -183,6 +182,69 @@ def count_articles(db_path: str = DB_PATH) -> int:
     count = cursor.fetchone()[0]
     conn.close()
     return count
+
+
+def save_hot_topics(topics_data: list, timeframe_hours: Optional[int] = None, db_path: str = DB_PATH):
+    """
+    Lưu các chủ đề hot vừa phát hiện vào DB.
+    """
+    conn = get_connection(db_path)
+    cursor = conn.cursor()
+    now_str = datetime.now(_VN_TZ).strftime('%Y-%m-%d %H:%M:%S')
+    try:
+        for t in topics_data:
+            cursor.execute('''
+                INSERT INTO hot_topics (topic_name, keywords, article_count, timeframe, created_at) 
+                VALUES (?, ?, ?, ?, ?)
+            ''', (t['topic_name'], t['keywords'], t['article_count'], timeframe_hours, now_str))
+            
+            topic_internal_id = cursor.lastrowid
+            
+            for a_id in t['article_ids']:
+                try:
+                    cursor.execute('''
+                        INSERT INTO topic_articles (topic_id, article_id)
+                        VALUES (?, ?)
+                    ''', (topic_internal_id, a_id))
+                except sqlite3.IntegrityError:
+                    pass
+        
+        conn.commit()
+        logger.info(f"✅ Successfully saved {len(topics_data)} hot topics to Database.")
+    except Exception as e:
+        conn.rollback()
+        logger.error(f"Failed to save hot topics: {e}")
+    finally:
+        conn.close()
+
+
+def get_latest_hot_topics(timeframe_hours: int, db_path: str = DB_PATH) -> list:
+    """
+    Lấy danh sách các chủ đề hot nhất của lần chạy gần nhất cho một mốc thời gian.
+    Dùng cho Dashboard.
+    """
+    conn = get_connection(db_path)
+    cursor = conn.cursor()
+    
+    cursor.execute('''
+        SELECT MAX(created_at) FROM hot_topics WHERE timeframe = ?
+    ''', (timeframe_hours,))
+    latest_time = cursor.fetchone()[0]
+    
+    if not latest_time:
+        conn.close()
+        return []
+        
+    cursor.execute('''
+        SELECT id, topic_name, keywords, article_count, timeframe, created_at
+        FROM hot_topics 
+        WHERE timeframe = ? AND created_at = ?
+    ''', (timeframe_hours, latest_time))
+    
+    columns = [d[0] for d in cursor.description]
+    topics = [dict(zip(columns, row)) for row in cursor.fetchall()]
+    conn.close()
+    return topics
 
 
 if __name__ == '__main__':

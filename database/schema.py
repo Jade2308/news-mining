@@ -61,10 +61,35 @@ def init_db(db_path: str = DB_PATH):
     cursor.execute(
         'CREATE INDEX IF NOT EXISTS idx_predicted_label ON articles(predicted_label)'
     )
-    cursor.execute(
-        'CREATE INDEX IF NOT EXISTS idx_labeled_at ON articles(labeled_at)'
-    )
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_labeled_at ON articles(labeled_at)')
 
+    # --- BẢNG LƯU CHỦ ĐỀ HOT ---
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS hot_topics (
+        id              INTEGER PRIMARY KEY AUTOINCREMENT,
+        topic_name      TEXT NOT NULL,
+        keywords        TEXT NOT NULL,
+        article_count   INTEGER DEFAULT 0,
+        timeframe       INTEGER,
+        created_at      TEXT DEFAULT (datetime('now'))
+    )
+    ''')
+    
+    cursor.execute("PRAGMA table_info(hot_topics)")
+    hot_topics_existing_columns = {row[1] for row in cursor.fetchall()}
+    if 'timeframe' not in hot_topics_existing_columns:
+        cursor.execute('ALTER TABLE hot_topics ADD COLUMN timeframe INTEGER')
+    
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS topic_articles (
+        topic_id        INTEGER NOT NULL,
+        article_id      TEXT NOT NULL,
+        FOREIGN KEY(topic_id) REFERENCES hot_topics(id),
+        FOREIGN KEY(article_id) REFERENCES articles(article_id),
+        UNIQUE(topic_id, article_id)
+    )
+    ''')
+    
     conn.commit()
     conn.close()
     print(f"✅ Database initialised at: {db_path}")
