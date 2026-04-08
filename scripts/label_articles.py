@@ -21,14 +21,14 @@ import sqlite3
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from ai_news.database.predictions import (
+from database.predictions import (
     add_batch_predictions,
     get_unpredicted_articles,
     get_prediction_stats,
     get_sample_predictions
 )
-from ai_news.database.schema import init_db
-from ai_news.config import DB_PATH, MODEL_DIR
+from database.schema import init_db
+from config import DB_PATH, MODEL_DIR
 
 logging.basicConfig(
     level=logging.INFO,
@@ -70,7 +70,7 @@ def run_labeling(
     # Load model
     logger.info(f"Loading model from {model_path}...")
     try:
-        from ai_news.models.phobert_classifier import PhoBERTClickbaitClassifier
+        from models.phobert_classifier import PhoBERTClickbaitClassifier
         classifier = PhoBERTClickbaitClassifier(model_name=model_path)
     except Exception as e:
         logger.error(f"Cannot load model: {e}")

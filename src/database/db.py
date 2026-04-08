@@ -7,7 +7,7 @@ from datetime import datetime, timezone, timedelta
 from typing import Optional, Tuple
 
 # Use the canonical DB_PATH from config
-from ai_news.config import DB_PATH
+from config import DB_PATH
 
 _VN_TZ = timezone(timedelta(hours=7))
 logger = logging.getLogger(__name__)
@@ -35,7 +35,7 @@ def _get_clickbait_model():
         return None
 
     try:
-        from ai_news.models.phobert_classifier import PhoBERTClickbaitClassifier
+        from models.phobert_classifier import PhoBERTClickbaitClassifier
         _CLICKBAIT_MODEL = PhoBERTClickbaitClassifier(model_name=model_dir)
         logger.info("PhoBERT clickbait model loaded successfully.")
     except Exception as exc:

@@ -19,7 +19,7 @@ from tqdm import tqdm
 from pathlib import Path
 import json
 
-from ai_news.config import MODEL_DIR, DATASET_CSV
+from config import MODEL_DIR, DATASET_CSV
 
 logging.basicConfig(
     level=logging.INFO,

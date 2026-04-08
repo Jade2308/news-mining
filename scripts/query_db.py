@@ -19,7 +19,7 @@ from datetime import datetime, timedelta
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from ai_news.config import DB_PATH
+from config import DB_PATH
 
 
 def print_stats():

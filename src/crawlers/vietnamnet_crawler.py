@@ -5,10 +5,10 @@ from datetime import datetime, timezone, timedelta
 import requests
 from bs4 import BeautifulSoup
 
-from ai_news.crawlers.base_crawler import BaseCrawler
-from ai_news.crawlers.utils import normalize_text, parse_time
-from ai_news.core.types import Article
-from ai_news.processing.clean_text import extract_text_from_html, clean_text
+from crawlers.base_crawler import BaseCrawler
+from crawlers.utils import normalize_text, parse_time
+from core.types import Article
+from core.clean_text import extract_text_from_html, clean_text
 
 logger = logging.getLogger(__name__)
 

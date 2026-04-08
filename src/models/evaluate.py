@@ -17,12 +17,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Ensure project root is in Python path when running as script
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from ai_news.config import MODEL_DIR, DATASET_CSV, EVALUATION_DIR
-from ai_news.models.phobert_classifier import PhoBERTClickbaitClassifier
+from config import MODEL_DIR, DATASET_CSV, EVALUATION_DIR
+from models.phobert_classifier import PhoBERTClickbaitClassifier
 from sklearn.model_selection import train_test_split
 
 logging.basicConfig(

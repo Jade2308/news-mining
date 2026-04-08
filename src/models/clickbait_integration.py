@@ -5,8 +5,8 @@ from typing import Tuple, Optional
 from pathlib import Path
 
 # Fix imports to use the new package structure
-from ai_news.config import MODEL_DIR
-from ai_news.models.phobert_classifier import PhoBERTClickbaitClassifier
+from config import MODEL_DIR
+from models.phobert_classifier import PhoBERTClickbaitClassifier
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +32,7 @@ def get_clickbait_model():
         if not Path(_MODEL_PATH).exists():
             logger.warning(f"❌ Model not found at {_MODEL_PATH}")
             logger.info("   Please train the model first using:")
-            logger.info("   python -m ai_news.models.train_clickbait")
+            logger.info("   python src/models/train_clickbait.py")
             return None
         
         logger.info(f"🤖 Loading PhoBERT model from {_MODEL_PATH}")
@@ -196,7 +196,7 @@ def insert_article_with_clickbait_detection(
         - insert_status: 'inserted', 'dup_url', 'dup_fp'
         - clickbait_result: Dict with detection results or None
     """
-    from ai_news.database.db import insert_article
+    from database.db import insert_article
     
     clickbait_result = None
     

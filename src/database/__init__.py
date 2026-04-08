@@ -3,8 +3,8 @@ database/__init__.py
 Export main database functions
 """
 
-from ai_news.database.schema import init_db
-from ai_news.database.predictions import (
+from database.schema import init_db
+from database.predictions import (
     add_prediction,
     add_batch_predictions,
     get_unpredicted_articles,

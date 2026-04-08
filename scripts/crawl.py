@@ -26,10 +26,10 @@ src_path = project_root / 'src'
 if str(src_path) not in sys.path:
     sys.path.insert(0, str(src_path))
 
-from ai_news.crawlers.tuoitre_crawler import TuoitreCrawler
-from ai_news.crawlers.vnexpress_crawler import VNExpressCrawler
-from ai_news.crawlers.vietnamnet_crawler import VietnamNetCrawler
-from ai_news.database.schema import init_db
+from crawlers.tuoitre_crawler import TuoitreCrawler
+from crawlers.vnexpress_crawler import VNExpressCrawler
+from crawlers.vietnamnet_crawler import VietnamNetCrawler
+from database.schema import init_db
 from scripts.label_articles import run_labeling
 
 logging.basicConfig(

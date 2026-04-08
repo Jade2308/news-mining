@@ -7,10 +7,10 @@ import os
 from pathlib import Path
 
 # --- Path Configuration ---
-# PACKAGE_ROOT is 'src/ai_news'
+# PACKAGE_ROOT is 'src'
 PACKAGE_ROOT = Path(__file__).resolve().parent
 # PROJECT_ROOT is the top-level directory
-PROJECT_ROOT = PACKAGE_ROOT.parent.parent
+PROJECT_ROOT = PACKAGE_ROOT.parent
 
 # Data directory for CSVs, JSONs and Database
 DATA_DIR = PROJECT_ROOT / 'data'

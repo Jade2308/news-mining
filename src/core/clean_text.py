@@ -1,5 +1,5 @@
 """
-processing/clean_text.py – Content cleaning utilities.
+core/clean_text.py – Content cleaning utilities.
 
 Removes noise from crawled Vietnamese news articles:
   - Script/style/nav/footer tags from raw HTML

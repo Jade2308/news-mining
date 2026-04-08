@@ -58,7 +58,7 @@ Thư mục mô hình AI `models/phobert_clickbait/` có dung lượng rất lớ
 
 **Bước 1: Huấn luyện lại mô hình**
 ```bash
-python -m ai_news.models.train_clickbait
+python src/models/train_clickbait.py
 ```
 *(Hệ thống sẽ học từ file `data/clickbait_dataset_vietnamese.csv` để tái tạo lại mô hình).*
 

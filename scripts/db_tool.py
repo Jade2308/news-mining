@@ -27,11 +27,11 @@ src_path = project_root / 'src'
 if str(src_path) not in sys.path:
     sys.path.insert(0, str(src_path))
 
-from ai_news.config import DB_PATH, SOURCES
-from ai_news.database.schema import init_db
-from ai_news.database.db import insert_article
-from ai_news.crawlers.vnexpress_crawler import VNExpressCrawler
-from ai_news.crawlers.tuoitre_crawler import TuoitreCrawler
+from config import DB_PATH, SOURCES
+from database.schema import init_db
+from database.db import insert_article
+from crawlers.vnexpress_crawler import VNExpressCrawler
+from crawlers.tuoitre_crawler import TuoitreCrawler
 
 logging.basicConfig(
     level=logging.INFO,

@@ -70,7 +70,7 @@ pip install -r requirements.txt
 ## Khởi tạo cơ sở dữ liệu
 
 ```bash
-python scripts/init_db.py
+python scripts/db_tool.py init
 ```
 Tạo file `news.db` với schema chuẩn (nếu chưa tồn tại).  
 > **Lưu ý:** Không commit `news.db` vào repo. Mỗi thành viên tự seed DB cục bộ.
@@ -81,13 +81,13 @@ Tạo file `news.db` với schema chuẩn (nếu chưa tồn tại).
 
 ```bash
 # Crawl VNExpress chuyên mục kinh-doanh, tối đa 200 bài
-python scripts/seed_db.py --source vnexpress --category kinh-doanh --limit 200
+python scripts/db_tool.py seed --source vnexpress --category kinh-doanh --limit 200
 
 # Crawl Tuổi Trẻ chuyên mục thời sự, tối đa 200 bài
-python scripts/seed_db.py --source tuoitre --category thoi-su --limit 200
+python scripts/db_tool.py seed --source tuoitre --category thoi-su --limit 200
 
 # Crawl tất cả nguồn với limit mặc định (50 bài mỗi nguồn)
-python scripts/seed_db.py --source all --limit 50
+python scripts/db_tool.py seed --source all --limit 50
 ```
 
 ### Tham số `seed_db.py`
@@ -97,7 +97,7 @@ python scripts/seed_db.py --source all --limit 50
 | `--source`   | `vnexpress` / `tuoitre` / `all` | `all`                        |
 | `--category` | Chuyên mục (tùy nguồn)        | `kinh-doanh` / `thoi-su`      |
 | `--limit`    | Số bài tối đa mỗi nguồn       | `50`                          |
-| `--db-path`  | Đường dẫn DB                  | `news.db` (từ `config.py`)    |
+| `--db-path`  | Đường dẫn DB                  | `data/news.db` (từ `src/config.py`) |
 
 ---
 
@@ -107,14 +107,12 @@ python scripts/seed_db.py --source all --limit 50
 ai-news-content-analysis/
 ├── data/                      # Dữ liệu thực thi (news.db, dataset)
 ├── artifacts/                 # Kết quả (models/, evaluation/)
-├── src/
-│   └── ai_news/               # Source code chính
-│       ├── config.py          # Cấu hình trung tâm (pathlib)
-│       ├── core/              # Types & Models chung
-│       ├── crawlers/          # Các module thu thập tin tức
-│       ├── database/          # Thao tác SQLite
-│       ├── models/            # ML models (Training, Inference)
-│       └── processing/        # Tiền xử lý văn bản
+├── src/                       # Source code chính
+│   ├── config.py              # Cấu hình trung tâm (pathlib)
+│   ├── core/                  # Logic lõi (types, clean_text)
+│   ├── crawlers/              # Các module thu thập tin tức
+│   ├── database/              # Thao tác SQLite
+│   └── models/                # ML models (Training, Inference)
 ├── scripts/                   # Các điểm chạy (Entry points)
 └── requirements.txt
 ```

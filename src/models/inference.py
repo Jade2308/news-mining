@@ -4,12 +4,12 @@ import sys
 from pathlib import Path
 
 # Ensure project root is in Python path when running as script
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from ai_news.config import MODEL_DIR
-from ai_news.models.phobert_classifier import PhoBERTClickbaitClassifier
+from config import MODEL_DIR
+from models.phobert_classifier import PhoBERTClickbaitClassifier
 
 logging.basicConfig(
     level=logging.INFO,
@@ -27,7 +27,7 @@ def main():
     if not Path(model_path).exists():
         logger.error(f"❌ Model not found at {model_path}")
         logger.info("Please train the model first:")
-        logger.info("  python -m ai_news.models.train_clickbait")
+        logger.info("  python src/models/train_clickbait.py")
         return
     
     # Load model
